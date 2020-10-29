@@ -1,0 +1,89 @@
+﻿@model CadastroPessoa.Models.Pessoa
+
+@{
+    var cidades = Model.Cidades != null ? Model.Cidades : new List<CadastroPessoa.Models.Cidade>();
+
+    if (cidades.Count > 0)
+    {
+        cidades.Insert(0, new CadastroPessoa.Models.Cidade { Nome = "Selecione a Cidade", Id = 0 });
+    }
+    else
+    {
+        cidades.Add(new CadastroPessoa.Models.Cidade { Nome = "Selecione a Cidade", Id = 0 });
+    }
+}
+
+<script>
+    $(document).ready(function () {
+        $("#Estado_IdEstado").change(function () {
+            $("#Cidade_Id").empty();
+            $.getJSON('/home/listarcidades', { IdEstado: $('#Estado_IdEstado').val() }, function (data) {
+                $.each(data, function () {
+                    $('#Cidade_Id').append('<option value=' + this.Id + '>' + this.Nome + '</option>');
+                });
+            });
+        });
+    });
+</script>
+
+<h2>Index</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Pessoa</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.Nome, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Nome, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Nome, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Bairro, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Bairro, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Bairro, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Estados, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("Estado.IdEstado", new SelectList(Model.Estados, "IdEstado", "Nome"), new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Estado, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Cidades, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("Cidade.Id", new SelectList(cidades, "Id", "Nome"), new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Cidade, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
